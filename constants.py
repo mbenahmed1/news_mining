@@ -1,9 +1,16 @@
-""" Contains all dictionary keys delivered by the api """
+"""Contains all constants for the project.
+
+This file contains all constants for the project. E.g. dictionary keys and
+regional names.
+    
+    Typical usage example:
+    print(REGIONS.get(i))
+"""
 
 # top level keys
 KEY_NEWS = 'news'
 KEY_REGIONAL = 'regional'
-KEY_NEWSTORIESCOUNTLINK = 'newStoriesCountLink' 
+KEY_NEWSTORIESCOUNTLINK = 'newStoriesCountLink'
 KEY_TYPE = 'type'
 
 # first level keys
@@ -35,15 +42,31 @@ KEY_COPYRIGHT = 'copyrigh'
 KEY_ALTTEXT = 'alttext'
 KEY_PREFERREDVARIANTS = 'preferredVariants'
 KEY_VIDEOWEBL = 'videowebl'
-KEY_PORTRAETGROSSPLUS8x9 =  'portraetgrossplus8x9'
+KEY_PORTRAETGROSSPLUS8x9 = 'portraetgrossplus8x9'
 KEY_VIDEOWEBM = 'videowebm'
 KEY_VIDEOWEBS = 'videowebs'
-KEY_PORTRAETGROSS8x9 =  'portraetgross8x9'
+KEY_PORTRAETGROSS8x9 = 'portraetgross8x9'
 KEY_IMAGEURL = 'imageurl'
 KEY_TEXT = 'text'
 KEY_HEADLINE = 'headline'
 KEY_VALUE = 'value'
 KEY_TAG = 'tag'
 
-SOURCE_URL = 'https://www.tagesschau.de/api2/'
-
+# regions
+REGIONS = {0: 'no region',
+           1: 'Baden-Württemberg',
+           2: 'Bayern',
+           3: 'Berlin',
+           4: 'Brandenburg',
+           5: 'Bremen',
+           6: 'Hamburg',
+           7: 'Hessen',
+           8: 'Mecklenburg-Vorpommern',
+           9: 'Niedersachsen',
+           10: 'Nordrhein-Westfalen',
+           11: 'Rheinland-Pfalz',
+           12: 'Saarland',
+           13: 'Sachsen',
+           14: 'Sachsen-Anhalt',
+           15: 'Schleswig-Holstein',
+           16: 'Thüringen'}
