@@ -1,12 +1,16 @@
-# imports
+# external libraries
 import urllib.request, json 
 import re
 import sys
-import constants
-from entry import Entry
-from teaser_image import TeaserImage
 from PIL import Image
 from datetime import datetime
+
+# classes 
+import constants
+import confidential
+from entry import Entry
+from teaser_image import TeaserImage
+
 
 """ Parser for data structured according to api2 """
 
