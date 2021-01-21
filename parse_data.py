@@ -1,38 +1,63 @@
+"""Contains the main parsing loop.
+
+This file contains the main parsing loop and helper functions to create
+Entry objects from the informations delivered by the API.
+"""
+
 # external libraries
-import urllib.request, json 
+import urllib.request
+import typing
+import json
 import re
 import sys
 from PIL import Image
 from datetime import datetime
 
-# classes 
+# classes
 import constants
 import confidential
 from entry import Entry
-from teaser_image import TeaserImage
 
 
-""" Parser for data structured according to api2 """
+def cleanhtml(raw_html: str) -> str:
+    """Cuts out html tags from strings.
 
+    Sometimes the text contains html tags such as <a> e.g.
+    This method will remove them from the string and returns a cleand version.
 
+    Args:
+        raw_html:   The string that should be cleaned from tags.
 
-
-def cleanhtml(raw_html):
-    """Cuts out html tags from strings."""
+    Returns:
+        String without html tags.
+    """
     cleanr = re.compile('<.*?>')
     cleantext = re.sub(cleanr, '', raw_html)
     return cleantext
 
-def parse_error(keystring):
-    """Reports if a key does not seem to work"""
+
+def parse_error(keystring: str):
+    """Reports if a key does not seem to work.
+    
+    Args:
+        keystring:  The string of the dictonary key.
+    """
     now = datetime.now()
     t = now.strftime("[%d/%m/%Y %H:%M:%S]")
     #print(t + " Key " + str(keystring) + " does not seem to work.")
     # do something like email administrator
-    #sys.exit()
+    # sys.exit()
 
-def parse_entries(entry_list):
-    """ Parses all entries in the entry list an returns a list of Entry objects """
+
+def parse_entries(entry_list) -> typing.List[Entry]:
+    """Parses all entries in the entry list an returns a list of Entry objects.
+    
+    Args:
+        entry_list: List of dictionaries returned by the json reader.
+    
+    Returns:
+        List of Entrys containing the data.
+    """
     parsed_entries = []
 
     # number of total requests
@@ -60,7 +85,7 @@ def parse_entries(entry_list):
         except Exception:
             num_failed_requests += 1
             parse_error(constants.KEY_EXTERNALID)
-        
+
         # title
         try:
             num_requests += 1
@@ -72,7 +97,7 @@ def parse_entries(entry_list):
         # teaser_image
         try:
             teaser_image = entry[constants.KEY_TEASERIMAGE]
-            
+
             # alttext of teaser_image
             try:
                 num_requests += 1
@@ -92,7 +117,6 @@ def parse_entries(entry_list):
 
                 teaser_image = Image.open(urllib.request.urlopen(imageurl))
 
-                
             except Exception:
                 num_failed_requests += 1
                 parse_error(constants.KEY_VIDEOWEBS)
@@ -109,7 +133,7 @@ def parse_entries(entry_list):
             content_list = []
             # for all elements in content
             for element in content:
-                
+
                 # look if it is a text or headline
                 try:
                     num_requests += 1
@@ -117,10 +141,10 @@ def parse_entries(entry_list):
                 except Exception:
                     num_failed_requests += 1
                     parse_error(constants.KEY_TYPE)
-                
+
                 # if the type is text or headline
                 if element_type == constants.KEY_TEXT or element_type == constants.KEY_HEADLINE:
-                    
+
                     # try to append the list with the text thats in the value field
                     try:
                         num_requests += 1
@@ -130,11 +154,11 @@ def parse_entries(entry_list):
                         content_list.append(cleanhtml(value))
                     except Exception:
                         num_failed_requests += 1
-                        parse_error(constants.KEY_VALUE)        
+                        parse_error(constants.KEY_VALUE)
         except Exception:
             num_failed_requests += 1
             parse_error(constants.KEY_CONTENT)
-        
+
         # date
         try:
             num_requests += 1
@@ -142,7 +166,7 @@ def parse_entries(entry_list):
         except Exception:
             num_failed_requests += 1
             parse_error(constants.KEY_DATE)
-        
+
         # tags
         try:
             num_requests += 1
@@ -162,7 +186,7 @@ def parse_entries(entry_list):
         except Exception:
             num_failed_requests += 1
             parse_error(constants.KEY_TAGS)
-        
+
         # region ID
         try:
             num_requests += 1
@@ -170,7 +194,7 @@ def parse_entries(entry_list):
         except Exception:
             num_failed_requests += 1
             parse_error(constants.KEY_REGIONID)
-        
+
         # first_sentence
         try:
             num_requests += 1
@@ -178,7 +202,7 @@ def parse_entries(entry_list):
         except Exception:
             num_failed_requests += 1
             parse_error(constants.KEY_FIRSTSENTENCE)
-        
+
         # geotags
         try:
             num_requests += 1
@@ -199,7 +223,7 @@ def parse_entries(entry_list):
         except Exception:
             num_failed_requests += 1
             parse_error(constants.KEY_GEOTAGS)
-        
+
         # breaking_news
         try:
             num_requests += 1
@@ -207,7 +231,7 @@ def parse_entries(entry_list):
         except Exception:
             num_failed_requests += 1
             parse_error(constants.KEY_BREAKINGNEWS)
-        
+
         # entry_type
         try:
             num_requests += 1
@@ -216,23 +240,23 @@ def parse_entries(entry_list):
         except Exception:
             num_failed_requests += 1
             parse_error(constants.KEY_TYPE)
-        
-        parsed_entry = Entry(sophoral_ID, external_ID, title, teaser_image, content_list, date, tag_list, region_ID, first_sentence, geotag_list, breaking_news, entry_type)
+
+        parsed_entry = Entry(sophoral_ID, external_ID, title, teaser_image, content_list,
+                             date, tag_list, region_ID, first_sentence, geotag_list, breaking_news, entry_type)
         parsed_entries.append(parsed_entry)
-    
-    print("Done. " + str(num_failed_requests) + " of " + str(num_requests) + " requests failed.")
-    return parse_entries
 
-
+    print("Done. " + str(num_failed_requests) + " of " +
+          str(num_requests) + " requests failed.")
+    return parsed_entries
 
 
 # loading the data from the api
 try:
-    with urllib.request.urlopen(constants.SOURCE_URL) as url:
+    with urllib.request.urlopen(confidential.SOURCE_URL) as url:
         data = json.loads(url.read().decode())
 except Exception:
     print("Data is not loading properly. Try again.")
-
+    sys.exit()
 
 # news section
 try:
@@ -242,10 +266,6 @@ except Exception:
 
 entries = parse_entries(news_entries)
 
-
-
-
-
-    
-
-    
+# printing some entries
+for entry in entries:
+    print(entry)
