@@ -23,10 +23,15 @@ class Database:
         self.cnx = self.connect()
 
     def __del__(self):
+        """Closes connection if database object gets deleted."""
+        self.disconnect()
+    
+    def disconnect(self):
         """Closes connection after work is done."""
         print('Connection closed.')
         self.cnx.close()
         self.connection_established = False
+
 
     def connect(self):
         """Method that trys to establish a sql connection."""
