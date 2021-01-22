@@ -18,62 +18,83 @@ class Database:
 
     def __init__(self):
         """Inits Database class"""
-
-        self.connection_established = False
+        self.is_connected = False
         self.cnx = self.connect()
+        self.connection_established = datetime.now()
+        self.connection_lost = datetime.now()
 
     def __del__(self):
         """Closes connection if database object gets deleted."""
         self.disconnect()
-    
-    def disconnect(self):
-        """Closes connection after work is done."""
-        print('Connection closed.')
-        self.cnx.close()
-        self.connection_established = False
 
+    def disconnect(self):
+        """Closes connection to the database."""
+        if self.is_connected:
+            print('Connection closed.')
+            self.connection_lost = datetime.now()
+            self.is_connected = False
+            try:
+                self.cnx.close()
+            except:
+                pass
+        else:
+            print('Connection is closed already.')
+
+    def __str__(self) -> str:
+        """Method that prints the server status"""
+        if self.is_connected:
+            return f'[Connected]: to {confidential.SQLHOSTNAME} since {self.connection_established}.'
+        else:
+            return f'[Disconnected]: since {self.connection_lost}.'
 
     def connect(self):
         """Method that trys to establish a sql connection."""
 
-        number_of_trys = 0
-        connection_established = False
+        if not self.is_connected:
+            number_of_trys = 0
+            connection_established = False
 
-        # try connecting a few times and wait in between trys
-        while number_of_trys < constants.SQLCONNECTIONTRYS and not connection_established:
-            # trying to connect to the database
-            try:
-                number_of_trys += 1
-                cnx = mysql.connector.connect(user=confidential.SQLUSERNAME,
-                                              database=confidential.SQLDATABASENAME,
-                                              host=confidential.SQLHOSTNAME,
-                                              password=confidential.SQLPASSWORD,
-                                              port=3306)
-                connection_established = True
-                print(
-                    f'Connection to {confidential.SQLDATABASENAME}@{confidential.SQLHOSTNAME} established.')
+            # try connecting a few times and wait in between trys
+            while number_of_trys < constants.SQLCONNECTIONTRYS and not connection_established:
+                # trying to connect to the database
+                try:
+                    number_of_trys += 1
+                    cnx = mysql.connector.connect(user=confidential.SQLUSERNAME,
+                                                  database=confidential.SQLDATABASENAME,
+                                                  host=confidential.SQLHOSTNAME,
+                                                  password=confidential.SQLPASSWORD,
+                                                  port=confidential.SQLPORT)
+                    connection_established = datetime.now()
+                    self.is_connected = True
+                    print(
+                        f'Connection to {confidential.SQLDATABASENAME}@{confidential.SQLHOSTNAME} established.')
 
-            except mysql.connector.Error as err:
-                if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                    print("Identity could not be verified.")
-                elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                    print("Database does not exist.")
+                except mysql.connector.Error as err:
+                    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                        print("Identity could not be verified.")
+                    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                        print("Database does not exist.")
+                    else:
+                        print(err)
+                        self.is_connected = False
+                        print("Could not establish connection. Connection closed.")
+                        cnx.close()
+
                 else:
-                    print(err)
-                    self.connection_established = False
-                    print("Could not establish connection. Connection closed.")
-                    cnx.close()
+                    # try again in some time
+                    if not connection_established:
+                        time.sleep(constants.SQLCONNECTIONSLEEP)
 
-            else:
-                # try again in some time
-                if not connection_established:
-                    time.sleep(constants.SQLCONNECTIONSLEEP)
-
-        # return the connection and set connection to true
-        self.connection_established = True
-        return cnx
+            # return the connection and set connection to true
+            return cnx
+        else:
+            print('Already connected.')
+            return False
 
 
 # testing implementation
 db = Database()
+
+
 time.sleep(5)
+db.disconnect()
