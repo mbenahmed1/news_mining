@@ -70,6 +70,10 @@ def parse_entries(entry_list) -> typing.List[Entry]:
     # to avoid the programm to crash if some fields are empty.
     # some of the data is not 100% complete but we accept this
     for entry in entry_list:
+        
+        content_list = []
+        geotag_list = []
+        tag_list = []
         # sophora ID
         try:
             num_requests += 1
@@ -130,7 +134,7 @@ def parse_entries(entry_list) -> typing.List[Entry]:
             num_requests += 1
             content = entry[constants.KEY_CONTENT]
 
-            content_list = []
+            
             # for all elements in content
             for element in content:
 
@@ -172,7 +176,7 @@ def parse_entries(entry_list) -> typing.List[Entry]:
             num_requests += 1
             tags = entry[constants.KEY_TAGS]
 
-            tag_list = []
+            
             # for all elements in tags
             for element in tags:
                 try:
@@ -208,7 +212,7 @@ def parse_entries(entry_list) -> typing.List[Entry]:
             num_requests += 1
             geotags = entry[constants.KEY_GEOTAGS]
 
-            geotag_list = []
+            
             # for all elements in geotags
             for element in geotags:
                 try:
