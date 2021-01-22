@@ -70,3 +70,7 @@ REGIONS = {0: 'no region',
            14: 'Sachsen-Anhalt',
            15: 'Schleswig-Holstein',
            16: 'Thüringen'}
+
+# general
+SQLCONNECTIONSLEEP = 5
+SQLCONNECTIONTRYS = 5
