@@ -74,6 +74,7 @@ def parse_entries(entry_list) -> typing.List[Entry]:
         content_list = []
         geotag_list = []
         tag_list = []
+        teaser_image = -1
         # sophora ID
         try:
             num_requests += 1
