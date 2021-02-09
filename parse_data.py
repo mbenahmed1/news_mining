@@ -38,7 +38,7 @@ def cleanhtml(raw_html: str) -> str:
 
 def parse_error(keystring: str):
     """Reports if a key does not seem to work.
-    
+
     Args:
         keystring:  The string of the dictonary key.
     """
@@ -51,10 +51,10 @@ def parse_error(keystring: str):
 
 def parse_entries(entry_list) -> typing.List[Entry]:
     """Parses all entries in the entry list an returns a list of Entry objects.
-    
+
     Args:
         entry_list: List of dictionaries returned by the json reader.
-    
+
     Returns:
         List of Entrys containing the data.
     """
@@ -70,7 +70,7 @@ def parse_entries(entry_list) -> typing.List[Entry]:
     # to avoid the programm to crash if some fields are empty.
     # some of the data is not 100% complete but we accept this
     for entry in entry_list:
-        
+
         content_list = []
         geotag_list = []
         tag_list = []
@@ -135,7 +135,6 @@ def parse_entries(entry_list) -> typing.List[Entry]:
             num_requests += 1
             content = entry[constants.KEY_CONTENT]
 
-            
             # for all elements in content
             for element in content:
 
@@ -177,7 +176,6 @@ def parse_entries(entry_list) -> typing.List[Entry]:
             num_requests += 1
             tags = entry[constants.KEY_TAGS]
 
-            
             # for all elements in tags
             for element in tags:
                 try:
@@ -213,7 +211,6 @@ def parse_entries(entry_list) -> typing.List[Entry]:
             num_requests += 1
             geotags = entry[constants.KEY_GEOTAGS]
 
-            
             # for all elements in geotags
             for element in geotags:
                 try:
