@@ -21,3 +21,4 @@ class TeaserImage:
         """Shows the image with its text."""
 
         self.image.show()
+        print(self.alttext)
